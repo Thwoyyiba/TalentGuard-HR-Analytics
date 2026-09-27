@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentGuard - Employee Attrition Prediction</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+            color: #243447;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: auto;
+            background: white;
+            padding: 32px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0 0 6px;
+            font-size: 34px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #667085;
+            margin: 0 0 28px;
+        }
+
+        h2 {
+            color: #243447;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 9px;
+            margin-top: 30px;
+        }
+
+        .section-note {
+            color: #667085;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+         .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #344054;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cfd4dc;
+            border-radius: 7px;
+            font-size: 15px;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #243447;
+            box-shadow: 0 0 0 2px rgba(36,52,71,0.08);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 34px;
+        }
+
+        button {
+            padding: 14px 34px;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            background: #243447;
+            color: white;
+        }
+button:hover {
+            background: #1b2733;
+        }
+
+        .result {
+            margin-top: 32px;
+            padding: 24px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #dfe5ec;
+        }
+
+        .result h2 {
+            border: none;
+            margin-top: 0;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 18px 0;
+        }
+
+        .metric {
+            background: white;
+            padding: 18px;
+            border-radius: 9px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .metric-title {
+            color: #667085;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .metric-value {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .risk-high { color: #b42318; }
+        .risk-medium { color: #b54708; }
+        .risk-low { color: #027a48; }
+
+        .recommendations {
+            margin-top: 22px;
+        }
+.recommendations ul {
+            padding-left: 22px;
+        }
+
+        .recommendations li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .error {
+            color: #b42318;
+            background: #fef3f2;
+            border: 1px solid #fecdca;
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 18px;
+        }
+
+        @media (max-width: 750px) {
+            body { padding: 15px; }
+            .container { padding: 20px; }
+            .form-grid, .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>TalentGuard</h1>
+    <p class="subtitle">HR Analytics & Employee Attrition Prediction</p>
+
+    <form action="/predict" method="POST">
+
+        <!-- ================= EMPLOYEE INFORMATION ================= -->
+        <h2>Employee Information</h2>
+        <p class="section-note">Enter the employee information used by the trained Random Forest model.</p>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" name="Age" min="18" step="1" value="35" required>
+            </div>
+
+            <div class="form-group">
+                <label>Gender</label>
+                <select name="Gender" required>
+                    <option value="">Select</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Marital Status</label>
+                <select name="Marital_Status" required>
+                    <option value="">Select</option>
+                    <option value="Married">Married</option>
+                    <option value="Single">Single</option>
+                    <option value="Divorced">Divorced</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Department</label>
+                <select name="Department" required>
+                    <option value="">Select</option>
+                    <option value="HR">HR</option>
+                    <option value="IT">IT</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Sales">Sales</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Job Role</label>
+                <select name="Job_Role" required>
+                    <option value="">Select</option>
+                    <option value="Assistant">Assistant</option>
+                    <option value="Executive">Executive</option>
+                    <option value="Manager">Manager</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Job Level</label>
+                <select name="Job_Level" required>
+                    <option value="">Select</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Monthly Income</label>
+                <input type="number" name="Monthly_Income" min="0" step="0.01" value="5000" required>
+            </div>
+
+            <div class="form-group">
+                <label>Hourly Rate</label>
+                <input type="number" name="Hourly_Rate" min="0" step="0.01" value="50" required>
+            </div>
+
+            <div class="form-group">
+                <label>Years at Company</label>
+                <input type="number" name="Years_at_Company" min="0" step="0.1" value="5" required>
+            </div>
+
+            <div class="form-group">
+                <label>Years in Current Role</label>
+                <input type="number" name="Years_in_Current_Role" min="0" step="0.1" value="3" required>
+            </div>
+
+            <div class="form-group">
+                <label>Years Since Last Promotion</label>
+                <input type="number" name="Years_Since_Last_Promotion" min="0" step="0.1" value="2" required>
+            </div>
+
+            <div class="form-group">
+                <label>Number of Companies Worked</label>
+                <input type="number" name="Number_of_Companies_Worked" min="0" step="1" value="2" required>
+            </div>
+
+        </div>
+
+        <!-- ================= JOB & PERFORMANCE ================= -->
+        <h2>Job & Performance Factors</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Work-Life Balance</label>
+                <select name="Work_Life_Balance" required>
+                    <option value="">Select</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Job Satisfaction</label>
+                <select name="Job_Satisfaction" required>
+                    <option value="">Select</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Performance Rating</label>
+                <select name="Performance_Rating" required>
+                    <option value="">Select</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Training Hours Last Year</label>
+                <input type="number" name="Training_Hours_Last_Year" min="0" step="0.1" value="40" required>
+            </div>
+
+            <div class="form-group">
+                <label>Overtime</label>
+                <select name="Overtime" required>
+                    <option value="">Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Project Count</label>
+                <input type="number" name="Project_Count" min="0" step="1" value="4" required>
+            </div>
+
+        </div>
+
+        <!-- ================= WORKLOAD ================= -->
+        <h2>Workload & Workplace Factors</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Average Hours Worked Per Week</label>
+                <input type="number" name="Average_Hours_Worked_Per_Week" min="0" step="0.1" value="40" required>
+            </div>
+            <div class="form-group">
+                <label>Absenteeism</label>
+                <input type="number" name="Absenteeism" min="0" step="0.1" value="5" required>
+            </div>
+
+            <div class="form-group">
+                <label>Work Environment Satisfaction</label>
+                <select name="Work_Environment_Satisfaction" required>
+                    <option value="">Select</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Relationship with Manager</label>
+                <select name="Relationship_with_Manager" required>
+                    <option value="">Select</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Job Involvement</label>
+                <select name="Job_Involvement" required>
+                    <option value="">Select</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Distance From Home</label>
+                <input type="number" name="Distance_From_Home" min="0" step="0.1" value="10" required>
+            </div>
+
+        </div>
+
+        <div class="button-container">
+            <button type="submit">Predict Attrition Risk</button>
+        </div>
+
+    </form>
+
+    <!-- ================= PREDICTION RESULT ================= -->
+    {% if prediction_text %}
+    <div class="result">
+
+        <h2>Prediction Result</h2>
+
+        <div class="result-grid">
+
+            <div class="metric">
+                <div class="metric-title">Prediction</div>
+                <div class="metric-value
+                    {% if 'High' in prediction_text %}risk-high
+                    {% else %}risk-low{% endif %}">
+                    {{ prediction_text }}
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-title">Risk Level</div>
+                <div class="metric-value
+                    {% if risk_level == 'High Risk' %}risk-high
+                    {% elif risk_level == 'Medium Risk' %}risk-medium
+                    {% else %}risk-low{% endif %}">
+                    {{ risk_level }}
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-title">Risk Probability</div>
+                <div class="metric-value">
+                    {{ risk_percentage }}%
+                </div>
+            </div>
+
+        </div>
+
+        {% if recommendations %}
+        <div class="recommendations">
+            <h2>HR Recommendations</h2>
+            <ul>
+                {% for recommendation in recommendations %}
+                    <li>{{ recommendation }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if prediction_text.startswith('Error:') %}
+            <div class="error">
+                {{ prediction_text }}
+            </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+</div>
+</body>
+</html>

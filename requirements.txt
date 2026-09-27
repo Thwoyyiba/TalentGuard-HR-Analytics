@@ -1,0 +1,10 @@
+flask
+werkzeug
+scikit-learn==1.9.0 
+joblib
+pandas
+numpy
+shap
+imbalanced-learn
+matplotlib
+seaborn
